@@ -3,7 +3,6 @@ name: Django-app workflow
 on: [push]
 
 jobs:
-
   build_and_push_to_docker_hub:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
@@ -31,7 +30,6 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: xoz9in/fronted:latest
-
   deploy:
     runs-on: ubuntu-latest
     needs: build_and_push_to_docker_hub
