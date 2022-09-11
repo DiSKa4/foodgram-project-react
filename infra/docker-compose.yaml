@@ -5,50 +5,38 @@ services:
     image: postgres:13.0-alpine
     volumes:
       - /var/lib/postgresql/data/
-    env_file:
-      - .env
-    depends_on:
-      - frontend
+    environment:
+      POSTGRES_PASSWORD: postgres
 
   web:
-    build: ../backend
+    build: ../backend/foodgram
     restart: always
     volumes:
-      - django_static:/app/django_static/
+      - static_value:/app/static/
       - media_value:/app/media/
     depends_on:
       - db
-    env_file:
-      - .env
-    command:
-      - /bin/bash
-      - -c
-      - |
-        python3 manage.py makemigrations --no-input
-        python3 manage.py migrate --no-input
-        python3 manage.py collectstatic --no-input
-        gunicorn --bind 0.0.0.0:8000 foodgram.wsgi:application
+
   frontend:
     build:
       context: ../frontend
       dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
-    depends_on:
-      - backend
+
   nginx:
     image: nginx:1.21.3-alpine
     ports:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - static_value:/var/html/static/
+      - media_value:/var/html/media/
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
-      - media_value:/var/html/media/
-      - django_static:/var/html/django_static/
     depends_on:
-      - backend
+      - web
 
 volumes:
+  static_value:
   media_value:
-  django_static:
