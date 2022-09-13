@@ -1,12 +1,11 @@
 version: '3.3'
 services:
-
   db:
-    image: postgres:13.0-alpine
+    image: postgres:13.3-alpine
     volumes:
-      - /var/lib/postgresql/data/
-    environment:
-      POSTGRES_PASSWORD: postgres
+        - ./postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
 
   web:
     image: xoz9in/foodgram_backend:latest
