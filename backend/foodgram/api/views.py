@@ -8,13 +8,13 @@ from rest_framework.response import Response
 from .filters import IngredientFilter, RecipeFilter
 from .models import (
     Cart, Favorite, Ingredient, Recipe, Tag,
-    )
+)
 from .pagination import CustomPagination
 from .permissions import IsAuthorOrAdminOrReadOnly
 from .serializers import (
     CreateRecipeSerializer, FavoriteSerializer, IngredientSerializer,
     RecipeShowSerializer, ShoppingCartSerializer, TagSerializer,
-    )
+)
 
 from . import services
 
