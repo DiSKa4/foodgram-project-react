@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import UniqueConstraint
+
 from users.models import User
 
 
@@ -9,17 +11,17 @@ class Ingredient(models.Model):
         verbose_name='Единица измерения'
     )
 
-    def __str__(self):
-        return f'{self.name}'
-
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
 
+    def __str__(self):
+        return self.name
+
 
 class Tag(models.Model):
     name = models.CharField(
-        max_length=200,
+        max_length=50,
         unique=True,
         verbose_name='Название'
     )
@@ -34,12 +36,12 @@ class Tag(models.Model):
         verbose_name='Идентификатор'
     )
 
-    def __str__(self):
-        return f'{self.slug}'
-
     class Meta:
         verbose_name = 'Тэг'
         verbose_name_plural = 'Тэги'
+
+    def __str__(self):
+        return self.slug
 
 
 class Recipe(models.Model):
@@ -74,13 +76,13 @@ class Recipe(models.Model):
         db_index=True
     )
 
-    def __str__(self):
-        return f'{self.name}'
-
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
         ordering = ['-pub_date', ]
+
+    def __str__(self):
+        return self.name
 
 
 class Favorite(models.Model):
@@ -97,12 +99,15 @@ class Favorite(models.Model):
         related_name='favorites'
     )
 
-    def __str__(self):
-        return f'{self.user}, {self.recipe}'
-
     class Meta:
         verbose_name = 'Избранный рецепт'
         verbose_name_plural = 'Избранные рецепты'
+        constraints = [
+            UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='user_favorite_unique'
+            )
+        ]
 
 
 class IngredientAmount(models.Model):
@@ -118,16 +123,18 @@ class IngredientAmount(models.Model):
     )
     amount = models.PositiveIntegerField(verbose_name='Количество')
 
-    def __str__(self):
-        return f'{self.amount}'
-
     class Meta:
         verbose_name = 'Ингредиент в рецепте'
         verbose_name_plural = 'Ингредиенты в рецепте'
+        constraints = [
+            UniqueConstraint(
+                fields=['recipe', 'ingredient'],
+                name='recipe_ingredient_unique'
+            )
+        ]
 
 
 class Cart(models.Model):
-    """Модель списка покупок"""
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -141,12 +148,15 @@ class Cart(models.Model):
         verbose_name='Рецепт'
     )
 
-    def __str__(self):
-        return f'{self.user}-->{self.recipe}'
-
     class Meta:
         verbose_name = 'Корзина покупок'
         verbose_name_plural = 'Корзины покупок'
+        constraints = [
+            UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='user_shoppingcart_unique'
+            )
+        ]
 
 
 class TagRecipe(models.Model):
@@ -156,6 +166,9 @@ class TagRecipe(models.Model):
     class Meta:
         verbose_name = 'Тэг рецепта'
         verbose_name_plural = 'Теги рецепта'
-
-    def __str__(self):
-        return f'{self.recipe}<-->{self.tag}'
+        constraints = [
+            UniqueConstraint(
+                fields=['recipe', 'tag'],
+                name='recipe_tag_unique'
+            )
+        ]

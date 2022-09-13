@@ -32,14 +32,16 @@ class RecipeAdmin(admin.ModelAdmin):
     list_filter = ('tags', 'pub_date',)
     empty_value_display = '-пусто-'
 
+    def get_in_favorites(self, obj):
+        return obj.favorite_recipe.count()
+
+    get_in_favorites.short_description = "В избранных"
+
 
 @admin.register(Favorite)
 class FavoriteRecipeAdmin(admin.ModelAdmin):
     list_display = ('user', 'recipe')
     list_filter = ('user', 'recipe')
-
-    def count_add_favorited(self, obj):
-        return Favorite.objects.filter(recipe=obj).count()
 
 
 @admin.register(Cart)

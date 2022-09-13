@@ -1,6 +1,7 @@
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
+from .mixin import ReprMixin
 from .models import Cart, Favorite, Ingredient, IngredientAmount, Recipe, Tag
 from users.serializers import UserSerializer
 
@@ -64,7 +65,10 @@ class RecipeShowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = '__all__'
+        fields = (
+            'id', 'name', 'tags', 'author', 'ingredients', 'is_favorited',
+            'is_in_shopping_cart', 'image', 'text', 'cooking_time',
+        )
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):
@@ -73,7 +77,7 @@ class ShortRecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class CreateRecipeSerializer(serializers.ModelSerializer):
+class CreateRecipeSerializer(serializers.ModelSerializer, ReprMixin):
     image = Base64ImageField()
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
@@ -84,7 +88,10 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = '__all__'
+        fields = (
+            'id', 'author', 'ingredients', 'tags',
+            'image', 'name', 'text', 'cooking_time'
+        )
 
     def validate(self, data):
         ingredients = data['ingredients']
@@ -97,9 +104,9 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                 })
             ingredients_list.append(ingredient_id)
             amount = ingredient['amount']
-            if int(amount) <= 0:
+            if int(amount) < 1:
                 raise serializers.ValidationError({
-                    'amount': 'Миниму 1!'
+                    'amount': 'Минимум 1!'
                 })
         tags = data['tags']
         if not tags:
@@ -122,12 +129,14 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         return data
 
     def ingredient_create(self, ingredients, recipe):
-        for ingredient in ingredients:
-            IngredientAmount.objects.create(
+        ingredients = [
+            IngredientAmount(
                 recipe=recipe,
                 ingredient_id=ingredient.get('id'),
                 amount=ingredient.get('amount'),
-            )
+            ) for ingredient in ingredients
+        ]
+        IngredientAmount.objects.bulk_create(ingredients)
 
     def create_tags(self, tags, recipe):
         for tag in tags:
@@ -149,16 +158,8 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         self.ingredient_create(validated_data.pop('ingredients'), instance)
         return super().update(instance, validated_data)
 
-    def to_representation(self, instance):
-        return RecipeShowSerializer(
-            instance,
-            context={
-                'request': self.context.get('request')
-            }
-        ).data
 
-
-class FavoriteSerializer(serializers.ModelSerializer):
+class FavoriteSerializer(serializers.ModelSerializer, ReprMixin):
     class Meta:
         model = Favorite
         fields = ('user', 'recipe')
@@ -173,14 +174,8 @@ class FavoriteSerializer(serializers.ModelSerializer):
             })
         return data
 
-    def to_representation(self, instance):
-        return ShortRecipeSerializer(
-            instance.recipe,
-            context={'request': self.context.get('request')}
-        ).data
 
-
-class ShoppingCartSerializer(serializers.ModelSerializer):
+class ShoppingCartSerializer(serializers.ModelSerializer, ReprMixin):
     class Meta:
         model = Cart
         fields = ('user', 'recipe')
@@ -192,9 +187,3 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         ):
             raise serializers.ValidationError('Уже добавлен')
         return data
-
-    def to_representation(self, instance):
-        return ShortRecipeSerializer(
-            instance.recipe,
-            context={'request': self.context.get('request')}
-        ).data

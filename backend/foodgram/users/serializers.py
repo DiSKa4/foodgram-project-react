@@ -1,8 +1,10 @@
 from djoser.serializers import UserCreateSerializer
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from api.models import Recipe
-from .models import User, Follow
+from .models import Follow, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -50,32 +52,51 @@ class CreateUserSerializer(UserCreateSerializer):
         )
 
 
-class FollowSerializer(serializers.ModelSerializer):
-    is_subscribed = serializers.SerializerMethodField()
-    recipes_count = serializers.IntegerField(read_only=True)
-
-    class Meta:
-        model = Follow
-        fields = '__all__'
-
-    def get_is_subscribed(self, obj):
-        return Follow.objects.filter(user=obj.user, author=obj.author).exists()
-
-    def get_recipes(self, obj):
-        request = self.context.get('request')
-        limit = request.GET.get('recipes_limit')
-        queryset = Recipe.objects.filter(author=obj.author)
-        if limit is not None:
-            queryset = Recipe.objects.filter(
-                author=obj.author
-            )[:int(limit)]
-        return ShortFollowSerializer(queryset, many=True).data
-
-    def get_recipes_count(self, obj):
-        return Recipe.objects.filter(author=obj.author.id).count()
-
-
 class ShortFollowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='author.id')
+    email = serializers.ReadOnlyField(source='author.email')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
+    is_subscribed = serializers.SerializerMethodField()
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.ReadOnlyField(source='author.recipes.count')
+
+    class Meta:
+        model = Follow
+        fields = (
+            'id', 'email', 'username', 'first_name', 'last_name',
+            'is_subscribed', 'recipes', 'recipes_count'
+        )
+
+    def get_is_subscribed(self, obj):
+        return Follow.objects.filter(
+            user=obj.user,
+            author=obj.author
+        ).exists()
+
+    def get_recipes(self, obj):
+        recipes = Recipe.objects.filter(author=obj.author)
+        serializer = ShortFollowSerializer(recipes, many=True)
+        return serializer.data
+
+    def validate(self, data):
+        get_object_or_404(User, username=data['author'])
+        if self.context['request'].user == data['author']:
+            raise ValidationError({
+                'errors': 'Нельзя отписаться от самого себя.'
+            })
+        if Follow.objects.filter(
+                user=self.context['request'].user,
+                author=data['author']
+        ):
+            raise ValidationError({
+                'errors': 'Вы уже подписаны на данного пользователя.'
+            })
+        return data

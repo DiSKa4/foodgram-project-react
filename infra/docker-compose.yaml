@@ -8,8 +8,8 @@ services:
     environment:
       POSTGRES_PASSWORD: postgres
 
-  web:
-    build: ../backend/foodgram
+  backend:
+    image: xoz9in/foodgram_backend:latest
     restart: always
     volumes:
       - static_value:/app/static/

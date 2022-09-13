@@ -22,31 +22,37 @@ class User(AbstractUser):
         verbose_name='Фамилия'
     )
 
-    def __str__(self):
-        return f'{self.first_name} {self.last_name}'
-
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
 
 
 class Follow(models.Model):
     user = models.ForeignKey(
         User,
-        verbose_name="Подписчик",
+        verbose_name='Подписчик',
         on_delete=models.CASCADE,
-        related_name="follower",
+        related_name='follower',
     )
     author = models.ForeignKey(
         User,
-        verbose_name="Автор",
+        verbose_name='Автор',
         on_delete=models.CASCADE,
-        related_name="following"
+        related_name='following'
     )
 
     class Meta:
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='user_author_unique'
+            )
+        ]
 
     def __str__(self):
         return f"{self.user}, {self.author}"

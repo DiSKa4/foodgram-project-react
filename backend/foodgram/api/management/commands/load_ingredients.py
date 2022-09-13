@@ -1,17 +1,17 @@
 import json
-import os
+
+from django.core.management.base import BaseCommand
 
 from api.models import Ingredient
-from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):
-    print(os.path.abspath(os.curdir))
     Ingredient.objects.all().delete()
 
     def handle(self, *args, **options):
         with open(
-            'C:\\Dev\\foodgram-project-react\\data\\ingredients.json',
+            'C:\\Dev\\foodgram-project-react\\api\\',
+            'management\\commands\\ingredients.json',
             'r',
             encoding='utf-8'
         ) as f:
@@ -21,4 +21,3 @@ class Command(BaseCommand):
                 name=str(d['name']),
                 measurement_unit=str(d['measurement_unit'])
             )
-        print('Успешно')

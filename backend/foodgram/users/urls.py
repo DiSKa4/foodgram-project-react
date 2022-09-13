@@ -1,24 +1,13 @@
 from django.urls import include, path
-from rest_framework import routers
+from rest_framework.routers import DefaultRouter
 
-from .views import SubscribeViewSet, UserViewSet
+from users.views import UserViewSet
 
 
-router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
-
+router = DefaultRouter()
+router.register('users', UserViewSet, 'users')
 
 urlpatterns = [
-    path('users/subscriptions/', SubscribeViewSet.as_view({
-        'get': 'list'
-        }),
-        name='subscriptions'
-    ),
-    path('users/<int:author_id>/subscribe/', SubscribeViewSet.as_view({
-        'post': 'create', 'delete': 'delete'
-        }),
-        name='subscribe'
-    ),
-    path('auth/', include('djoser.urls.authtoken')),
     path('', include(router.urls)),
+    path('', include('djoser.urls')),
 ]
