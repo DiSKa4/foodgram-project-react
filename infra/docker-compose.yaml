@@ -18,9 +18,7 @@ services:
       - db
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: xoz9in/fronted:latest
     volumes:
       - ../frontend/:/app/result_build/
 

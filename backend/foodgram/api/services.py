@@ -19,6 +19,5 @@ def download_shopping_cart(self, request):
             f'{ingredient["ingredient__measurement_unit"]}\n')
     response = HttpResponse(content, content_type='text/plain')
     response['Content-Disposition'] = (
-            f'attachment;'f'filename={settings.FILENAME_SHOP}'
-        )
+            f'attachment;'f'filename={settings.FILENAME_SHOP}')
     return response
