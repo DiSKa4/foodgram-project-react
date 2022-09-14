@@ -23,11 +23,6 @@ class UserViewSet(viewsets.ModelViewSet):
         user = request.user
         author = get_object_or_404(User, id=pk)
         if self.request.method == 'POST':
-            if Follow.objects.filter(user=user, author=author).exists():
-                return Response(
-                    {'errors': 'Вы уже подписаны на данного пользователя'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
             follow = Follow.objects.create(user=user, author=author)
             serializer = FollowSerializer(
                 follow, context={'request': request}

@@ -1,7 +1,7 @@
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
-from .mixin import ReprMixin
+from .mixins import ReprMixin
 from .models import Cart, Favorite, Ingredient, IngredientAmount, Recipe, Tag
 from users.serializers import UserSerializer
 
@@ -128,7 +128,8 @@ class CreateRecipeSerializer(serializers.ModelSerializer, ReprMixin):
             })
         return data
 
-    def ingredient_create(self, ingredients, recipe):
+    @staticmethod
+    def __ingredient_create(ingredients, recipe):
         ingredients = [
             IngredientAmount(
                 recipe=recipe,
@@ -138,7 +139,8 @@ class CreateRecipeSerializer(serializers.ModelSerializer, ReprMixin):
         ]
         IngredientAmount.objects.bulk_create(ingredients)
 
-    def create_tags(self, tags, recipe):
+    @staticmethod
+    def __create_tags(tags, recipe):
         for tag in tags:
             recipe.tags.add(tag)
 
@@ -149,13 +151,13 @@ class CreateRecipeSerializer(serializers.ModelSerializer, ReprMixin):
         recipe = Recipe.objects.create(
             author=author, **validated_data)
         recipe.tags.set(tags_data)
-        self.ingredient_create(ingredient_data, recipe)
+        self.__ingredient_create(ingredient_data, recipe)
         return recipe
 
     def update(self, instance, validated_data):
         IngredientAmount.objects.filter(recipe=instance).delete()
-        self.create_tags(validated_data.pop('tags'), instance)
-        self.ingredient_create(validated_data.pop('ingredients'), instance)
+        self.__create_tags(validated_data.pop('tags'), instance)
+        self.__ingredient_create(validated_data.pop('ingredients'), instance)
         return super().update(instance, validated_data)
 
 

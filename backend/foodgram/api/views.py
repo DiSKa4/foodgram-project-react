@@ -47,7 +47,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return CreateRecipeSerializer
 
     @staticmethod
-    def post_func(request, pk, serializers):
+    def __post_func(request, pk, serializers):
         data = {'user': request.user.id, 'recipe': pk}
         serializer = serializers(data=data, context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -55,7 +55,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @staticmethod
-    def delete_func(request, pk, model):
+    def __delete_func(request, pk, model):
         user = request.user
         recipe = get_object_or_404(Recipe, id=pk)
         model_object = get_object_or_404(model, user=user, recipe=recipe)
@@ -68,7 +68,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, pk):
-        return self.post_func(
+        return self.__post_func(
             request=request,
             pk=pk,
             serializers=FavoriteSerializer
@@ -80,7 +80,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated]
     )
     def shopping_cart(self, request, pk):
-        return self.post_func(
+        return self.__post_func(
             request=request,
             pk=pk,
             serializers=ShoppingCartSerializer
@@ -88,11 +88,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
-        return self.delete_func(request=request, pk=pk, model=Favorite)
+        return self.__delete_func(request=request, pk=pk, model=Favorite)
 
     @shopping_cart.mapping.delete
     def delete_shopping_cart(self, request, pk):
-        return self.delete_func(request=request, pk=pk, model=Cart)
+        return self.__delete_func(request=request, pk=pk, model=Cart)
 
     @action(detail=False, permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):

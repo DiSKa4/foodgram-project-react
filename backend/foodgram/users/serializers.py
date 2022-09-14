@@ -82,9 +82,12 @@ class FollowSerializer(serializers.ModelSerializer):
         ).exists()
 
     def get_recipes(self, obj):
-        recipes = Recipe.objects.filter(author=obj.author)
-        serializer = ShortFollowSerializer(recipes, many=True)
-        return serializer.data
+        request = self.context.get('request')
+        limit = request.GET.get('recipes_limit')
+        queryset = Recipe.objects.filter(author=obj.author)
+        if limit is not None:
+            queryset = queryset[:int(limit)]
+        return ShortFollowSerializer(queryset, many=True).data
 
     def validate(self, data):
         get_object_or_404(User, username=data['author'])

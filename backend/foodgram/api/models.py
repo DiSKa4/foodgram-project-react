@@ -109,6 +109,9 @@ class Favorite(models.Model):
             )
         ]
 
+    def __str__(self):
+        return f'{self.user.username} - {self.recipe}'
+
 
 class IngredientAmount(models.Model):
     ingredient = models.ForeignKey(
@@ -132,6 +135,9 @@ class IngredientAmount(models.Model):
                 name='recipe_ingredient_unique'
             )
         ]
+
+    def __str__(self):
+        return f'{self.recipe} - {self.ingredient} - {self.amount}'
 
 
 class Cart(models.Model):
@@ -158,6 +164,9 @@ class Cart(models.Model):
             )
         ]
 
+    def __str__(self):
+        return f'{self.user.username} - {self.recipe}'
+
 
 class TagRecipe(models.Model):
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
@@ -172,3 +181,6 @@ class TagRecipe(models.Model):
                 name='recipe_tag_unique'
             )
         ]
+
+    def __str__(self): 
+        return f'{self.recipe}<-->{self.tag}'

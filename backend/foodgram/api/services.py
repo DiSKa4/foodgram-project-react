@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from .models import IngredientAmount
 
 
-def download_shopping_cart(self, request):
+def download_shopping_cart(_, request):
     ingredients = IngredientAmount.objects.filter(
         recipe__shopping_cart__user=request.user).values(
         'ingredient__name',
