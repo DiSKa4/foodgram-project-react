@@ -182,5 +182,5 @@ class TagRecipe(models.Model):
             )
         ]
 
-    def __str__(self): 
+    def __str__(self):
         return f'{self.recipe}<-->{self.tag}'
