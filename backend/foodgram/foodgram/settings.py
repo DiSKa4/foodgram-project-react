@@ -10,7 +10,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'nt5i)swedjaq$mkwiky')
 
 DEBUG = os.getenv('DEBUG', default=False)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['84.201.162.42', 'localhost', 'foodgramxoz.ddns.net']
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -74,6 +74,13 @@ DATABASES = {
     }
 }
 
+"""DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}"""
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
@@ -101,6 +108,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
 
 
 STATIC_URL = '/static/'
