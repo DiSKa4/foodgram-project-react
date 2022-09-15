@@ -1,4 +1,4 @@
-class ReprMixin():
+class ReprMixin:
     def to_representation(self, instance):
         request = self.context.get('request')
         context = {'request': request}

@@ -5,13 +5,13 @@ from django.http import HttpResponse
 from .models import IngredientAmount
 
 
-def download_shopping_cart(_, request):
+def download_shopping_cart(user):
     ingredients = IngredientAmount.objects.filter(
-        recipe__shopping_cart__user=request.user).values(
+        recipe__shopping_cart__user=user).values(
         'ingredient__name',
         'ingredient__measurement_unit').annotate(total=Sum('amount'))
     content = 'Cписок покупок:\n\n'
-    for number, ingredient in enumerate(ingredients, start=1):
+    for number, ingredient in enumerate(ingredients):
         content += (
             f'[{number}] '
             f'{ingredient["ingredient__name"]} - '
