@@ -29,22 +29,42 @@ password: qwerty12345
 
 Шаблон наполнения env-файла
 
+
 DB_NAME='postgres' # имя базы данных
+
+
 POSTGRES_USER='postgres' # логин для подключения к базе данных
+
+
 POSTGRES_PASSWORD='postgres' # пароль для подключения к БД
+
+
 DB_HOST='db' # название сервиса (контейнера)
+
+
 DB_PORT='5432' # порт для подключения к БД
+
 
 Запуск проекта
 
 Запустите доккер:
 
 sudo docker-compose up
+
+
 Соберите статические файлы:
+
+
 sudo docker-compose exec backend python manage.py collectstatic --noinput
+
+
 Примените миграции:
 sudo docker-compose exec backend python manage.py migrate --noinput
+
+
 Создать суперпользователя Django:
+
+
 sudo docker-compose exec backend python manage.py createsuperuser
 
 
