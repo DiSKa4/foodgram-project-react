@@ -1,5 +1,4 @@
-![example workflow](https://github.com/DiSKa4/
-foodgram-project-react/actions/workflows/main.yml/badge.svg)
+![example workflow](https://github.com/DiSKa4/foodgram-project-react/actions/workflows/main.yml/badge.svg)
 
 Дипломная работа Foodgram
 
