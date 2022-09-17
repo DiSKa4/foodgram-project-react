@@ -10,7 +10,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'nt5i)swedjaq$mkwiky')
 
 DEBUG = os.getenv('DEBUG', default=False)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['84.201.162.42', 'localhost', 'foodgramxoz.ddns.net']
 
 AUTH_USER_MODEL = 'users.User'
 
