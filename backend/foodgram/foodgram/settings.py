@@ -16,8 +16,6 @@ AUTH_USER_MODEL = 'users.User'
 
 FILENAME_SHOP = 'shopping_cart.txt'
 
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -73,6 +71,7 @@ DATABASES = {
         'PORT': '5432'
     }
 }
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 

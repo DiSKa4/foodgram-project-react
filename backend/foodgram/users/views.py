@@ -36,9 +36,16 @@ class UserViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_204_NO_CONTENT
             )
 
+
+class FollowListViewSet(viewsets.ModelViewSet):
+    queryset = Follow.objects.all()
+    serializer_class = FollowSerializer
+    pagination_class = CustomPagination
+
     @action(
         detail=False,
         permission_classes=[IsAuthenticated],
+        serializer_class=FollowSerializer,
         methods=['GET']
     )
     def subscriptions(self, request):
