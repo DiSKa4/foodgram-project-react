@@ -72,7 +72,6 @@ DATABASES = {
     }
 }
 
-
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -123,6 +122,10 @@ DJOSER = {
         'user': 'users.serializers.UserSerializer',
         'current_user': 'users.serializers.UserSerializer',
         'user_create': 'users.serializers.CreateUserSerializer',
+    },
+    'PERMISSIONS': {
+        'user': ['rest_framework.permissions.AllowAny'],
+        'user_list': ['rest_framework.permissions.AllowAny'],
     },
     'HIDE_USERS': False,
 }
