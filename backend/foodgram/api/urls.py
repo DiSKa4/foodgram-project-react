@@ -5,12 +5,13 @@ from .views import (
 )
 from users.views import FollowListViewSet
 
+
 router = DefaultRouter()
 router.register('tags', TagViewSet, basename='tags')
 router.register('ingredients', IngredientViewSet, basename='ingredients')
 router.register('recipes', RecipeViewSet, basename='recipes')
 router.register(
-    r'users/subscriptions',FollowListViewSet,
+    r'users/subscriptions', FollowListViewSet,
     basename='subscriptions'
 )
 

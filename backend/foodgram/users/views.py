@@ -38,8 +38,8 @@ class UserViewSet(viewsets.ModelViewSet):
             )
 
 
-class FollowListViewSet(ListModelMixin,viewsets.GenericViewSet):
-    permissions_classes = [IsAuthenticated,]
+class FollowListViewSet(ListModelMixin, viewsets.GenericViewSet):
+    permissions_classes = [IsAuthenticated]
     serializer_class = FollowSerializer
     pagination_class = CustomPagination
 
