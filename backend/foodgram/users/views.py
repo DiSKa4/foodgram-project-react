@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -37,24 +38,11 @@ class UserViewSet(viewsets.ModelViewSet):
             )
 
 
-class FollowListViewSet(viewsets.ModelViewSet):
-    queryset = Follow.objects.all()
+class FollowListViewSet(ListModelMixin,viewsets.GenericViewSet):
+    permissions_classes = [IsAuthenticated,]
     serializer_class = FollowSerializer
     pagination_class = CustomPagination
 
-    @action(
-        detail=False,
-        permission_classes=[IsAuthenticated],
-        serializer_class=FollowSerializer,
-        methods=['GET']
-    )
-    def subscriptions(self, request):
-        user = request.user
-        queryset = Follow.objects.filter(user=user)
-        pages = self.paginate_queryset(queryset)
-        serializer = FollowSerializer(
-            pages,
-            many=True,
-            context={'request': request}
-        )
-        return self.get_paginated_response(serializer.data)
+    def get_queryset(self):
+        user = self.request.user
+        return Follow.objects.filter(user=user)
